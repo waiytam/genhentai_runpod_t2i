@@ -9,18 +9,36 @@ LORA_DIR="$MODELS_DIR/loras"
 
 HF_BASE="https://huggingface.co/waiytam/genhentai-lora-t2i/resolve/main"
 
+MIN_SIZE_BYTES=1048576  # 1 MB — any valid safetensors is larger than this
+
 download_if_missing() {
   local dest="$1"
   local url="$2"
+  # Delete corrupted/truncated files (< 1 MB) so they get re-downloaded
+  if [ -f "$dest" ]; then
+    local size
+    size=$(stat -c%s "$dest" 2>/dev/null || echo 0)
+    if [ "$size" -lt "$MIN_SIZE_BYTES" ]; then
+      echo "Corrupted (${size} bytes), re-downloading: $(basename "$dest")"
+      rm -f "$dest"
+    fi
+  fi
   if [ ! -f "$dest" ]; then
     echo "Downloading $(basename "$dest")..."
     mkdir -p "$(dirname "$dest")"
     if [ -n "$HF_TOKEN" ]; then
-      wget -q --show-progress --header="Authorization: Bearer $HF_TOKEN" -O "$dest" "$url" \
+      curl -L -H "Authorization: Bearer $HF_TOKEN" -o "$dest" "$url" \
         || { echo "FAILED: $url"; rm -f "$dest"; }
     else
-      wget -q --show-progress -O "$dest" "$url" \
+      curl -L -o "$dest" "$url" \
         || { echo "FAILED: $url"; rm -f "$dest"; }
+    fi
+    # Validate after download
+    local size
+    size=$(stat -c%s "$dest" 2>/dev/null || echo 0)
+    if [ "$size" -lt "$MIN_SIZE_BYTES" ]; then
+      echo "WARNING: $(basename "$dest") is only ${size} bytes — likely a failed download, removing"
+      rm -f "$dest"
     fi
   else
     echo "Already present: $(basename "$dest")"
@@ -70,31 +88,31 @@ done
 
 # Filenames with spaces (must be quoted in dest path, URL-encoded in URL)
 download_if_missing "$LORA_DIR/IL-Ani-B - Basic [LoRA] - Illustrious-XL v0.1.safetensors" \
-  "$HF_BASE/IL-Ani-B%20-%20Basic%20%5BLoRA%5D%20-%20Illustrious-XL%20v0.1.safetensors"
+  "$HF_BASE/IL-Ani-B%20-%20Basic%20%5BLoRA%5D%20-%20Illustrious-XL%20v0.1.safetensors?download=true"
 
 download_if_missing "$LORA_DIR/IL-[NoodleNood] Assorted Doujin Style Blend Illustrious.safetensors" \
-  "$HF_BASE/IL-%5BNoodleNood%5D%20Assorted%20Doujin%20Style%20Blend%20Illustrious.safetensors"
+  "$HF_BASE/IL-%5BNoodleNood%5D%20Assorted%20Doujin%20Style%20Blend%20Illustrious.safetensors?download=true"
 
 download_if_missing "$LORA_DIR/IL-Traditional Ink Painting [LoRA] - Illustrious-XL v0.1.safetensors" \
-  "$HF_BASE/IL-Traditional%20Ink%20Painting%20%5BLoRA%5D%20-%20Illustrious-XL%20v0.1.safetensors"
+  "$HF_BASE/IL-Traditional%20Ink%20Painting%20%5BLoRA%5D%20-%20Illustrious-XL%20v0.1.safetensors?download=true"
 
 download_if_missing "$LORA_DIR/IL-Watercolor Realistic [LoRA] - Illustrious-XL v0.1.safetensors" \
-  "$HF_BASE/IL-Watercolor%20Realistic%20%5BLoRA%5D%20-%20Illustrious-XL%20v0.1.safetensors"
+  "$HF_BASE/IL-Watercolor%20Realistic%20%5BLoRA%5D%20-%20Illustrious-XL%20v0.1.safetensors?download=true"
 
 download_if_missing "$LORA_DIR/IL-Watercolor Anime [LoRA] - Illustrious-XL v0.1.safetensors" \
-  "$HF_BASE/IL-Watercolor%20Anime%20%5BLoRA%5D%20-%20Illustrious-XL%20v0.1.safetensors"
+  "$HF_BASE/IL-Watercolor%20Anime%20%5BLoRA%5D%20-%20Illustrious-XL%20v0.1.safetensors?download=true"
 
 download_if_missing "$LORA_DIR/IL-[WAI][Style]Asanagi-figure-20.safetensors" \
-  "$HF_BASE/IL-%5BWAI%5D%5BStyle%5DAsanagi-figure-20.safetensors"
+  "$HF_BASE/IL-%5BWAI%5D%5BStyle%5DAsanagi-figure-20.safetensors?download=true"
 
 download_if_missing "$LORA_DIR/IL-S1 Dramatic Lighting Illustrious_V2.safetensors" \
-  "$HF_BASE/IL-S1%20Dramatic%20Lighting%20Illustrious_V2.safetensors"
+  "$HF_BASE/IL-S1%20Dramatic%20Lighting%20Illustrious_V2.safetensors?download=true"
 
 download_if_missing "$LORA_DIR/IL-tonton shuicai Illustrious-XL.safetensors" \
-  "$HF_BASE/IL-tonton%20shuicai%20Illustrious-XL.safetensors"
+  "$HF_BASE/IL-tonton%20shuicai%20Illustrious-XL.safetensors?download=true"
 
 download_if_missing "$LORA_DIR/IL-shC398nE79EAC.mcat.safetensors" \
-  "$HF_BASE/IL-shC398nE79EAC.mcat.safetensors"
+  "$HF_BASE/IL-shC398nE79EAC.mcat.safetensors?download=true"
 
 # Japanese filename LoRA (special percent-encoded URL provided by user)
 download_if_missing "$LORA_DIR/IL-AIイラストおじさん_V3-Exp-Compact.safetensors" \
