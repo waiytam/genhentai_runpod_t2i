@@ -98,6 +98,6 @@ download_if_missing "$LORA_DIR/IL-shC398nE79EAC.mcat.safetensors" \
 
 # Japanese filename LoRA (special percent-encoded URL provided by user)
 download_if_missing "$LORA_DIR/IL-AIイラストおじさん_V3-Exp-Compact.safetensors" \
-  "https://huggingface.co/waiytam/genhentai-lora-t2i/resolve/main/IL-AI%E3%82%A4%E3%83%A9%E3%82%B9%E3%83%88%E3%81%8A%E3%81%97%E3%82%99%E3%81%95%E3%82%93_V3-Exp-Compact.safetensors?download=true"
+  "https://huggingface.co/waiytam/genhentai-lora-t2i/resolve/main/IL-AI%E3%82%A4%E3%83%A9%E3%82%B9%E3%83%88%E3%81%8A%E3%81%97%E3%82%99%E3%81%95%E3%82%93_V3-Exp-Compact.safetensors"
 
 echo "T2I model check complete."
