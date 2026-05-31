@@ -1,4 +1,4 @@
-FROM runpod/worker-comfyui:5.5.1-base
+FROM runpod/worker-comfyui:5.8.5-base
 
 # Disable torch.compile (dynamo) to prevent FP8 Triton kernel compilation errors
 ENV TORCHDYNAMO_DISABLE=1
